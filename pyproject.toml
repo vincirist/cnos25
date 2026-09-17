@@ -26,7 +26,9 @@ dependencies = [
     "opencv-python",
     "ultralytics",
     "ftfy",
-    "bop_toolkit_lib @ git+https://github.com/thodan/bop_toolkit.git"
+    "bop_toolkit_lib @ git+https://github.com/thodan/bop_toolkit.git",
+    "torchmetrics>=1.9.0",
+    "termcolor>=3.3.0",
 ]
 
 [tool.setuptools]
@@ -34,3 +36,8 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+]

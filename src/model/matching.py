@@ -28,8 +28,11 @@ def classify_proposals_through_matching(object_proposal_class_embeddings, ref_sa
     assert scores.shape == (N,n,k), scores.shape
 
     if matching_strategy=='top_5':
-        # the CNOS default matching strategy is max_top_5 over k-dim
-        score_per_proposal_and_object = torch.topk(scores, k=5, dim=-1)[0]
+        # the CNOS default matching strategy is max_top_5 over k-dim.
+        # k is clamped to the templates actually available: with fewer than 5 reference
+        # views torch.topk raises, which otherwise blocks any run onboarded on n < 5.
+        # Clamping is what "top 5 of 3" means, and it meets the k>=5 curve exactly at k=5.
+        score_per_proposal_and_object = torch.topk(scores, k=min(5, k), dim=-1)[0]
         score_per_proposal_and_object = torch.mean(score_per_proposal_and_object, dim=-1)
     elif matching_strategy=='mean' or matching_strategy=='prototype':
         score_per_proposal_and_object = scores.mean(dim=-1)
