@@ -14,8 +14,8 @@ from functools import partial
 import multiprocessing
 from tqdm import tqdm
 
-from src.utils.inout import save_json, load_json, save_json_bop23, save_npz
-from src.utils.bbox_utils import xyxy_to_xywh, xywh_to_xyxy, force_binary_mask
+from cnos25.utils.inout import save_json, load_json, save_json_bop23, save_npz
+from cnos25.utils.bbox_utils import xyxy_to_xywh, xywh_to_xyxy, force_binary_mask
 
 lmo_object_ids = np.array(
     [

@@ -9,8 +9,8 @@ import torch
 import torchvision.transforms as T
 from torch.utils.data import Dataset
 
-from src.utils.bbox_utils import CropResizePad
-from src.dataloader.base_bop import BaseBOP
+from cnos25.utils.bbox_utils import CropResizePad
+from cnos25.dataloader.base_bop import BaseBOP
 
 
 try:
@@ -22,6 +22,31 @@ except ImportError:
     )
 
 
+def sample_frames(rng, num_frames, num_selected):
+    """Indices of `num_selected` of `num_frames` frames, drawn at random without replacement by `rng` (a `np.random.RandomState`)."""
+    return list(rng.choice(num_frames, num_selected, replace=False))
+
+
+def crop_reference(image, mask, processor):
+    """A reference from an onboarding frame: the PIL `image` masked by the PIL `mask` and cropped to the mask's box by `processor` (a `CropResizePad`).
+    Returns the crop as a PIL image and the mask cropped alike, a (1, H, W) float tensor in [0, 1]."""
+    image = np.asarray(image) * np.expand_dims(np.asarray(mask) > 0, -1) # apply mask
+    image = Image.fromarray(image)
+    bbox = mask.getbbox() # box is derived from non-zero mask
+
+    mask = torch.from_numpy(np.array(mask) / 255).float()
+    image = torch.from_numpy(np.array(image.convert("RGB")) / 255).float()
+
+    template = image.permute(2, 0, 1)
+    mask = mask.unsqueeze(-1).permute(2, 0, 1)
+    box = torch.tensor(bbox)
+    if box.min() < 0:  logging.warning(f'{box.min()=} < 0')
+
+    template_cropped = processor(images=template.unsqueeze(0), boxes=box.unsqueeze(0))[0]
+    mask_cropped = processor(images=mask.unsqueeze(0), boxes=box.unsqueeze(0))[0]
+    return T.ToPILImage()(template_cropped), mask_cropped # return PIL image, not tensor
+
+
 # The template (reference) dataloader
 class BOPTemplate(Dataset):
     def __init__(
@@ -30,9 +55,11 @@ class BOPTemplate(Dataset):
         obj_ids,
         image_size,
         num_imgs_per_obj=50,
+        seed=None,
         **kwargs,
     ):
         self.logger = logging.getLogger(__name__)
+        self.rng = np.random.RandomState(seed)  # seed None: unseeded
         self.template_dir = template_dir
         self.model_free_onboarding = True
         self.dataset_name = template_dir.split("/")[-2]
@@ -100,31 +127,14 @@ class BOPTemplate(Dataset):
             ), f"rgb and mask mismatch in {obj_dir}"
 
             # select random samples
-            selected_idx = list(np.random.choice(
-                len(obj_rgbs), num_selected_imgs, replace=False
-            ))
+            selected_idx = sample_frames(self.rng, len(obj_rgbs), num_selected_imgs)
 
             for idx_img in tqdm(selected_idx):
-                image = Image.open(obj_rgbs[idx_img])
-
-                mask = Image.open(obj_masks[idx_img])
-                image = np.asarray(image) * np.expand_dims(np.asarray(mask) > 0, -1) # apply mask
-                image = Image.fromarray(image)
-                bbox = mask.getbbox() # box is derived from non-zero mask
-
-                mask = torch.from_numpy(np.array(mask) / 255).float()
-                image = torch.from_numpy(np.array(image.convert("RGB")) / 255).float()
+                template_cropped, mask_cropped = crop_reference(
+                    Image.open(obj_rgbs[idx_img]), Image.open(obj_masks[idx_img]), self.proposal_processor
+                )
                 image_paths.append(obj_rgbs[idx_img])
-
-                template = image.permute(2, 0, 1)
-                mask = mask.unsqueeze(-1).permute(2, 0, 1)
-                box = torch.tensor(bbox)
-                if box.min() < 0:  self.logger.warning(f'{box.min()=} < 0')
-
-                template_cropped = self.proposal_processor(images=template.unsqueeze(0), boxes=box.unsqueeze(0))[0]
-                templates_cropped.append(T.ToPILImage()(template_cropped)) # return PIL image, not tensor
-
-                mask_cropped = self.proposal_processor(images=mask.unsqueeze(0), boxes=box.unsqueeze(0))[0]
+                templates_cropped.append(template_cropped)
                 masks_cropped.append(mask_cropped)
 
         masks_cropped = torch.stack(masks_cropped,dim=0)

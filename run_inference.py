@@ -51,7 +51,7 @@ def run_inference(cfg: DictConfig):
     logging.info("Initializing query dataloader...")
     logging.info(f"{cfg.data.root_dir=}")
     if cfg.dataset_name == 'hot3d':
-        from src.dataloader import bop_hot3d
+        from cnos25.dataloader import bop_hot3d
         query_dataset = bop_hot3d.BOPHOT3DTest(root_dir=osp.join(cfg.data.root_dir, 'hot3d'), split=cfg.split)
     else:
         query_dataloader_config = cfg.data.query_dataloader.copy()

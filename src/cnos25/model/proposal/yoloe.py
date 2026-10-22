@@ -8,7 +8,7 @@ import supervision as sv
 from ultralytics import YOLOE
 from ultralytics.utils.ops import scale_masks
 
-from src.utils.bbox_utils import boxes_rot90
+from cnos25.utils.bbox_utils import boxes_rot90
 
 
 class YoloE:

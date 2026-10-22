@@ -1,15 +1,15 @@
 import hydra
 import logging
 
-from src.model.descriptor.template_extraction import DinoTemplateExtraction
+from cnos25.model.descriptor.template_extraction import DinoTemplateExtraction
 
 
-@hydra.main(version_base=None, config_path="../../configs", config_name="extract_templates")
+@hydra.main(version_base=None, config_path="../../../configs", config_name="extract_templates")
 def compute_and_save_reference_descriptors(cfg):
     # Instantiate the reference dataloader (the one that provides the crops from the onboarding images)
     ref_dataloader = cfg.data.reference_dataloader
     if cfg.dataset_name == 'hot3d':
-        ref_dataloader._target_ = 'src.dataloader.bop_hot3d.BOPHOT3DTemplate'
+        ref_dataloader._target_ = 'cnos25.dataloader.bop_hot3d.BOPHOT3DTemplate'
     ref_dataloader = hydra.utils.instantiate(ref_dataloader)
 
     # Instantiate the object that handles the template descriptor extraction and saving

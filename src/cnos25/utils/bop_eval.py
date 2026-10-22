@@ -6,7 +6,7 @@ import torchvision
 import torch
 import hydra
 
-from src.utils.detection_utils import Detections
+from cnos25.utils.detection_utils import Detections
 
 # experiment_name is both the name of the folder where the predictions are stored as well as the {experiment_name}.json prediction file as well as used by the bop toolkit to infer dataset and split
 class BopEval:
@@ -104,7 +104,7 @@ class BopEval:
         if self.verbose > 0: logging.info('Saved detections to', out_file, f'in {(time.time() - start):.3f}s')
 
     def generate_json_from_npzs(self, save_masks=True):
-        from src.utils.detection_utils import convert_npz_to_json_loop
+        from cnos25.utils.detection_utils import convert_npz_to_json_loop
         convert_npz_to_json_loop(experiment_result_dir=self.result_dir,
                                  outfile_name=self.bopstyle_experiment_name,
                                  no_score_distr=True, masks=save_masks)

@@ -5,13 +5,13 @@ import os.path as osp
 import numpy as np
 from tqdm import tqdm
 
-import src.utils.detection_utils
-from src.utils.bop_eval import BopEval
+import cnos25.utils.detection_utils
+from cnos25.utils.bop_eval import BopEval
 
 
 # need the load_framewise_detections_from_json conversion function, currently can't save mask
 def from_json(result_json, target_dir, nms_method, nms_thresh):
-    frames_detections, frames_info = src.utils.detection_utils.load_framewise_detections_from_json(result_json)
+    frames_detections, frames_info = cnos25.utils.detection_utils.load_framewise_detections_from_json(result_json)
     # print(len(frame_detections), len(frame_info))
 
     for frame_det, frame_info in tqdm(zip(frames_detections, frames_info)):
@@ -26,7 +26,7 @@ def from_json(result_json, target_dir, nms_method, nms_thresh):
 
 def from_npzs(source_npzs, target_dir, nms_method, nms_thresh):
     for npzpth in tqdm(source_npzs):
-        detections = src.utils.detection_utils.load_from_file(npzpth)
+        detections = cnos25.utils.detection_utils.load_from_file(npzpth)
         scene_id, frame_id = npzpth.split('/')[-1].split('.')[0].split('_')
         scene_id = scene_id.replace('scene', '')  # just leave number
         frame_id = frame_id.replace('frame', '')  # just leave number
@@ -55,7 +55,7 @@ def nms_result_json(result_json, out_dir=None,
     from_json(result_json, npz_out_dir, nms_method, nms_thresh) # main call here
 
     # merge generated npzs back to json
-    src.utils.detection_utils.convert_npz_to_json_loop(experiment_result_dir=out_dir,
+    cnos25.utils.detection_utils.convert_npz_to_json_loop(experiment_result_dir=out_dir,
                                                        outfile_name=f'nms-{result_name}',
                                                        npzs_dir=npz_out_dirname,
                                                        no_score_distr=True, masks=False)
@@ -66,7 +66,7 @@ def nms_result_json(result_json, out_dir=None,
 
     return out_dir
 
-@hydra.main(version_base=None, config_path="../../configs", config_name="run_nms")
+@hydra.main(version_base=None, config_path="../../../configs", config_name="run_nms")
 def main(cfg):
     if cfg.out_dir == 'hydra':
         hydra_cfg = hydra.core.hydra_config.HydraConfig.get()

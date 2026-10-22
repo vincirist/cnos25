@@ -5,8 +5,8 @@ import numpy as np
 import os
 import os.path as osp
 
-from src.utils.detection_utils import Detections
-from src.model import matching
+from cnos25.utils.detection_utils import Detections
+from cnos25.model import matching
 
 
 class CNOS25:

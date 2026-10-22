@@ -10,7 +10,7 @@ import os.path as osp
 import pandas as pd
 import torch
 
-from src.utils.inout import load_json, save_json, casting_format_to_save_json
+from cnos25.utils.inout import load_json, save_json, casting_format_to_save_json
 
 
 class BaseBOP(Dataset):

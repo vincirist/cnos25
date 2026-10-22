@@ -4,7 +4,7 @@ import torchvision.transforms as T
 import logging
 import numpy as np
 
-from src.utils.bbox_utils import CropResizePad
+from cnos25.utils.bbox_utils import CropResizePad
 
 
 class DescriptorModel:

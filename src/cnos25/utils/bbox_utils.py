@@ -9,8 +9,8 @@ import logging
 from copy import deepcopy
 from typing import Tuple
 
-from src.utils.segment_anything_transforms import ResizeLongestSide
-from src.utils import imgproc
+from cnos25.utils.segment_anything_transforms import ResizeLongestSide
+from cnos25.utils import imgproc
 
 
 class CustomResizeLongestSide(ResizeLongestSide):

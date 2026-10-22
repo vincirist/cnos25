@@ -110,7 +110,7 @@ bop_data_root/
 ###  1. Onboarding Stage
 Extract the reference (=template) descriptors from the onboarding data:
 ```commandline
-python -m src.scripts.extract_template_descriptors dataset_name=hopev2
+python -m cnos25.scripts.extract_template_descriptors dataset_name=hopev2
 ```
 The corresponding config file is [extract_templates.yaml](configs/extract_templates.yaml).
 
@@ -127,7 +127,7 @@ Change it by passing `out_file=foo.pt`.
 1. Make sure you have all paths correctly set in `local.yaml` and the dataset [file tree](#datasets) matches.
 2. You can override all config params from CLI. For example, if there are issues during template extraction, you can have a fast test run with only 6 instead of 100 samples per object:
     ```
-    python -m src.scripts.extract_template_descriptors data.reference_dataloader.num_imgs_per_obj=6 out_file=dummy.pt dataset_name=...
+    python -m cnos25.scripts.extract_template_descriptors data.reference_dataloader.num_imgs_per_obj=6 out_file=dummy.pt dataset_name=...
     ```
 3. Instead of running everything as a single python script, run modularly using our provided [notebooks](). It might be easier to spot the exact issue there.
 
@@ -213,7 +213,7 @@ This prepocessing configuration can be set in [yoloe.yaml](configs/model/proposa
 Provide `dataset_name`, `split`, and the result `.json` to the following script:
 ```bash
 mkdir viz
-python -m src.scripts.visualize_detectron2 dataset_name={...} split={...} input_file=outputs/{...}/nms-{...}.json output_dir=viz
+python -m cnos25.scripts.visualize_detectron2 dataset_name={...} split={...} input_file=outputs/{...}/nms-{...}.json output_dir=viz
 ```
 The corresponding config file is [run_vis.yaml](configs/run_vis.yaml). Adopted from original cnos.
 

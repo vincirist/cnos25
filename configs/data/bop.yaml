@@ -3,14 +3,15 @@ source_url: https://bop.felk.cvut.cz/media/data/bop_datasets/
 unzip_mode: unzip
 
 reference_dataloader:
-  _target_: src.dataloader.bop.BOPTemplate
+  _target_: cnos25.dataloader.bop.BOPTemplate
   template_dir: ${..root_dir}/${dataset_name}/onboarding_${onboarding}
   num_imgs_per_obj: 100
+  seed:  # seeds the choice of the reference frames; empty: unseeded
   obj_ids:  # set at runtime
   image_size: 256
 
 query_dataloader:
-  _target_: src.dataloader.bop.BOPTest
+  _target_: cnos25.dataloader.bop.BOPTest
   root_dir: ${..root_dir}/
   split: ${split}
   reset_metaData: True

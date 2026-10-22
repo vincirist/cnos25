@@ -11,6 +11,15 @@ import os.path as osp
 from collections import defaultdict
 from tqdm import tqdm
 
+def describe_references(descriptor_model, template_imgs):
+    """The features of the reference crops `template_imgs` (PIL images) by `descriptor_model` (a `DescriptorModel`), per token type, e.g. `x_norm_clstoken` (k, d)."""
+    # processing
+    template_img_tensors = torch.stack([descriptor_model.rgb_normalize(im) for im in template_imgs])
+    template_img_tensors = template_img_tensors.to(descriptor_model.device)
+    # forward
+    return descriptor_model.chunked_fwd(template_img_tensors)
+
+
 class TemplateEmbExtraction:
     def __init__(self, ref_dataloader, dataset_name, obj_names, out_dir=None):
         self.obj_names = obj_names
@@ -86,11 +95,7 @@ class DinoTemplateExtraction(TemplateEmbExtraction):
         for class_name, template_imgs in tqdm(self.ref_images.items(), desc="Computing template descriptors ..."):
             assert isinstance(template_imgs[0], PIL.Image.Image), f'got {type(template_imgs[0])}'
 
-            # processing
-            template_img_tensors = torch.stack([self.descriptor_model.rgb_normalize(im) for im in template_imgs])
-            template_img_tensors = template_img_tensors.to(self.descriptor_model.device)
-            # forward
-            res = self.descriptor_model.chunked_fwd(template_img_tensors)
+            res = describe_references(self.descriptor_model, template_imgs)
 
             self.ref_descriptors['x_norm_clstoken_' + class_name] = res['x_norm_clstoken']
             self.ref_descriptors['x_norm_patchtokens_' + class_name] = res['x_norm_patchtokens']

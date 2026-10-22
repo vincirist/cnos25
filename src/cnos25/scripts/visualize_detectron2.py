@@ -9,11 +9,11 @@ from omegaconf import DictConfig
 from PIL import Image
 from tqdm import tqdm
 
-from src.utils.visualization_detectron2 import CNOSVisualizer
-from src.utils.detection_utils import rle_to_mask
+from cnos25.utils.visualization_detectron2 import CNOSVisualizer
+from cnos25.utils.detection_utils import rle_to_mask
 
 
-@hydra.main(version_base=None, config_path="../../configs", config_name="run_vis")
+@hydra.main(version_base=None, config_path="../../../configs", config_name="run_vis")
 def visualize(cfg: DictConfig) -> None:
     if cfg.split=='test' and cfg.dataset_name in ["hb", "tless"]:
         split = "test_primesense"

@@ -6,7 +6,7 @@ cfg:
   cache_file: ${.model_name}_descriptors.pt  # These are the template embeddings that will be loaded on inference
 
 model: # wrapper
-  _target_: src.model.descriptor.descriptor_model.DescriptorModel
+  _target_: cnos25.model.descriptor.descriptor_model.DescriptorModel
   model:
       _target_: torch.hub.load
       repo_or_dir: ${local.dinov3_repo}  # change if you want to use huggingface model

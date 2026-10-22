@@ -15,9 +15,9 @@ from torch.utils.data import Dataset
 import json
 import fnmatch
 
-from src.utils.bbox_utils import CropResizePad
-from src.dataloader.base_bop import BaseBOP
-from src.utils.inout import load_json
+from cnos25.utils.bbox_utils import CropResizePad
+from cnos25.dataloader.base_bop import BaseBOP
+from cnos25.utils.inout import load_json
 
 
 def find_in_tar(tar_path, pattern):
